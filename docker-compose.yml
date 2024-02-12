@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   
-  spring-boot-app-multi-thread:
+  spring-boot-app-non-virtual:
     image: amazoncorretto:21
     volumes:
       - ./spring-boot-demo/build/libs/spring-boot-demo-1.0.jar:/app.jar
@@ -11,16 +11,16 @@ services:
     expose:
       - "8080"
     environment:
-      SPRING_PROFILES_ACTIVE: multi-thread
+      SPRING_PROFILES_ACTIVE: non-virtual
       SPRING_OUTPUT_ANSI_ENABLED: ALWAYS
     deploy:
       resources:
         limits:
-          cpus: "1.0"
-          memory: 200M
+          cpus: "4.0"
+          memory: 4G
     command: java -jar /app.jar com.example.demo.DemoApplication
 
-  spring-boot-app-mono-thread-virtual:
+  spring-boot-app-mono-virtual:
     image: amazoncorretto:21
     volumes:
       - ./spring-boot-demo/build/libs/spring-boot-demo-1.0.jar:/app.jar
@@ -29,16 +29,16 @@ services:
     expose:
       - "8080"
     environment:
-      SPRING_PROFILES_ACTIVE: mono-thread-virtual
+      SPRING_PROFILES_ACTIVE: mono-virtual
       SPRING_OUTPUT_ANSI_ENABLED: ALWAYS
     deploy:
       resources:
         limits:
-          cpus: "1.0"
-          memory: 200M
+          cpus: "4.0"
+          memory: 4G
     command: java -jar /app.jar com.example.demo.DemoApplication
 
-  spring-boot-app-multi-thread-virtual:
+  spring-boot-app-virtual:
     image: amazoncorretto:21
     volumes:
       - ./spring-boot-demo/build/libs/spring-boot-demo-1.0.jar:/app.jar
@@ -47,13 +47,13 @@ services:
     expose:
       - "8080"
     environment:
-      SPRING_PROFILES_ACTIVE: multi-thread-virtual
+      SPRING_PROFILES_ACTIVE: virtual
       SPRING_OUTPUT_ANSI_ENABLED: ALWAYS
     deploy:
       resources:
         limits:
-          cpus: "1.0"
-          memory: 200M
+          cpus: "4.0"
+          memory: 4G
     command: java -jar /app.jar com.example.demo.DemoApplication
 
   nodejs-app:
@@ -67,7 +67,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1.0"
-          memory: 200M
+          cpus: "4.0"
+          memory: 4G
     command: node /app.js
     
