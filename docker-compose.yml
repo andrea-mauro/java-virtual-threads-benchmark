@@ -55,3 +55,19 @@ services:
           cpus: "1.0"
           memory: 200M
     command: java -jar /app.jar com.example.demo.DemoApplication
+
+  nodejs-app:
+    image: navikt/node-express
+    volumes:
+      - ./nodejs-demo/src/app.js:/app.js
+    ports:
+      - "8084:3000"
+    expose:
+      - "3000"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 200M
+    command: node /app.js
+    

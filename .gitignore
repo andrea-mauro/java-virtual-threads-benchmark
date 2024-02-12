@@ -2,3 +2,5 @@
 /spring-boot-demo/build/
 /.idea/
 /spring-boot-demo/gradle/
+/nodejs-demo/node_modules/
+/nodejs-demo.iml
