@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  
+  spring-boot-app-multi-thread:
+    image: amazoncorretto:21
+    volumes:
+      - ./spring-boot-demo/build/libs/spring-boot-demo-1.0.jar:/app.jar
+    ports:
+      - "8081:8080"
+    expose:
+      - "8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: multi-thread
+      SPRING_OUTPUT_ANSI_ENABLED: ALWAYS
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 200M
+    command: java -jar /app.jar com.example.demo.DemoApplication
+
+  spring-boot-app-mono-thread-virtual:
+    image: amazoncorretto:21
+    volumes:
+      - ./spring-boot-demo/build/libs/spring-boot-demo-1.0.jar:/app.jar
+    ports:
+      - "8082:8080"
+    expose:
+      - "8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: mono-thread-virtual
+      SPRING_OUTPUT_ANSI_ENABLED: ALWAYS
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 200M
+    command: java -jar /app.jar com.example.demo.DemoApplication
+
+  spring-boot-app-multi-thread-virtual:
+    image: amazoncorretto:21
+    volumes:
+      - ./spring-boot-demo/build/libs/spring-boot-demo-1.0.jar:/app.jar
+    ports:
+      - "8083:8080"
+    expose:
+      - "8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: multi-thread-virtual
+      SPRING_OUTPUT_ANSI_ENABLED: ALWAYS
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 200M
+    command: java -jar /app.jar com.example.demo.DemoApplication
