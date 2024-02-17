@@ -20,7 +20,7 @@ services:
           memory: 4G
     command: java -jar /app.jar com.example.demo.DemoApplication
 
-  spring-boot-app-mono-virtual:
+  spring-boot-app-virtual:
     image: amazoncorretto:21
     volumes:
       - ./spring-boot-demo/build/libs/spring-boot-demo-1.0.jar:/app.jar
@@ -29,7 +29,7 @@ services:
     expose:
       - "8080"
     environment:
-      SPRING_PROFILES_ACTIVE: mono-virtual
+      SPRING_PROFILES_ACTIVE: virtual
       SPRING_OUTPUT_ANSI_ENABLED: ALWAYS
     deploy:
       resources:
@@ -38,7 +38,7 @@ services:
           memory: 4G
     command: java -jar /app.jar com.example.demo.DemoApplication
 
-  spring-boot-app-virtual:
+  spring-boot-app-mono-virtual:
     image: amazoncorretto:21
     volumes:
       - ./spring-boot-demo/build/libs/spring-boot-demo-1.0.jar:/app.jar
@@ -47,7 +47,7 @@ services:
     expose:
       - "8080"
     environment:
-      SPRING_PROFILES_ACTIVE: virtual
+      SPRING_PROFILES_ACTIVE: mono-virtual
       SPRING_OUTPUT_ANSI_ENABLED: ALWAYS
     deploy:
       resources:
