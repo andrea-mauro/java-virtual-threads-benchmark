@@ -1,6 +1,11 @@
 var express = require('express')
 var app = express()
 
+app.get('/demo/', async function (req, res) {
+
+    res.send('Hello from the Node.js app!')
+})
+
 app.get('/demo/cpu-light', async function (req, res) {
 
     const initialTime = new Date().getTime()
