@@ -9,8 +9,8 @@ app.get('/demo/', async function (req, res) {
 app.get('/demo/cpu-light', async function (req, res) {
 
     const initialTime = new Date().getTime()
-    await someIoBlockingOperation(100)
-    await someIoBlockingOperation(100)
+    await someIoBlockingOperation(200)
+    await someIoBlockingOperation(200)
 
     console.log(`Request processed in ${new Date().getTime() - initialTime} ms`)
     res.send('Hello World!')
@@ -19,9 +19,9 @@ app.get('/demo/cpu-light', async function (req, res) {
 app.get('/demo/cpu-intensive', async function (req, res) {
 
     const initialTime = new Date().getTime()
-    await someIoBlockingOperation(100)
-    someCpuIntensiveTask(10)
-    await someIoBlockingOperation(100)
+    await someIoBlockingOperation(200)
+    someCpuIntensiveTask(100)
+    await someIoBlockingOperation(200)
 
     console.log(`Request processed in ${new Date().getTime() - initialTime} ms`)
     res.send('Hello World!')
