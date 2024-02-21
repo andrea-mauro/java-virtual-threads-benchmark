@@ -287,4 +287,194 @@ Percentage of the requests served within a certain time (ms)
  100%   4895 (longest request)
 ```
 
-The application running on Virtual Threads performs poorly compared to the one running on normal threads. In fact, the total execution time is about 27s, and the average time per request is 2700ms. This is actually worse than I expected.
+The application running on Virtual Threads performs poorly compared to the one running on normal threads. In fact, the total execution time is about 27s, and the average time per request is 2700ms.
+
+### Comparing a mono-threaded Spring Boot with Virtual Threads and Node.js
+
+Let's now compare the mono-threaded Spring Boot application running with Virtual Threads with a Node.js application. The reason for this comparison is that Java Virtual Threads work conceptually very similarly to how the event loop works in Node.js and Node.js being mono-threaded, we can compare the performance of the two in a similar scenario.
+
+#### Testing the CPU light scenario
+
+###### Spring Boot
+
+```sh
+ab -n 1000 -c 100 http://localhost:8083/demo/cpu-light
+```
+```
+Server Software:        
+Server Hostname:        localhost
+Server Port:            8083
+
+Document Path:          /demo/cpu-light
+Document Length:        13 bytes
+
+Concurrency Level:      100
+Time taken for tests:   4.829 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      146000 bytes
+HTML transferred:       13000 bytes
+Requests per second:    207.10 [#/sec] (mean)
+Time per request:       482.851 [ms] (mean)
+Time per request:       4.829 [ms] (mean, across all concurrent requests)
+Transfer rate:          29.53 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    2   1.8      2       8
+Processing:   409  430  11.6    429     501
+Waiting:      409  429  11.4    427     498
+Total:        412  432  11.2    431     501
+
+Percentage of the requests served within a certain time (ms)
+  50%    431
+  66%    437
+  75%    441
+  80%    441
+  90%    447
+  95%    453
+  98%    457
+  99%    460
+ 100%    501 (longest request)
+```
+###### Node.js
+
+```sh
+ab -n 1000 -c 100 http://localhost:8084/demo/cpu-light
+```
+```
+Server Software:        
+Server Hostname:        localhost
+Server Port:            8084
+
+Document Path:          /demo/cpu-light
+Document Length:        12 bytes
+
+Concurrency Level:      100
+Time taken for tests:   5.007 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      211000 bytes
+HTML transferred:       12000 bytes
+Requests per second:    199.72 [#/sec] (mean)
+Time per request:       500.699 [ms] (mean)
+Time per request:       5.007 [ms] (mean, across all concurrent requests)
+Transfer rate:          41.15 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    4   2.5      5       9
+Processing:   411  449  14.4    447     483
+Waiting:      407  433  12.7    433     474
+Total:        414  454  13.6    454     485
+
+Percentage of the requests served within a certain time (ms)
+  50%    454
+  66%    455
+  75%    456
+  80%    457
+  90%    481
+  95%    482
+  98%    484
+  99%    484
+ 100%    485 (longest request)
+```
+
+In a scenario where only IO blocking operations are involved, the two services perform similarly. The total execution time is about 5s, and the average time per request is 500ms, which is expected given that the IO blocking operations take 400ms in total and we are running 100 requests in parallel.
+
+
+#### Testing the CPU intensive scenario
+
+Let's check out now how the two applications perform when a CPU intensive operation is involved.
+
+###### Spring Boot
+
+```sh
+ab -n 1000 -c 100 http://localhost:8083/demo/cpu-intensive
+```
+```
+Server Software:        
+Server Hostname:        localhost
+Server Port:            8083
+
+Document Path:          /demo/cpu-intensive
+Document Length:        13 bytes
+
+Concurrency Level:      100
+Time taken for tests:   27.926 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      146000 bytes
+HTML transferred:       13000 bytes
+Requests per second:    35.81 [#/sec] (mean)
+Time per request:       2792.639 [ms] (mean)
+Time per request:       27.926 [ms] (mean, across all concurrent requests)
+Transfer rate:          5.11 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    1   0.8      0       4
+Processing:   608 2702  72.7   2710    2906
+Waiting:      604 2702  72.8   2710    2906
+Total:        609 2702  72.7   2711    2908
+WARNING: The median and mean for the initial connection time are not within a normal deviation
+        These results are probably not that reliable.
+
+Percentage of the requests served within a certain time (ms)
+  50%   2711
+  66%   2712
+  75%   2713
+  80%   2714
+  90%   2716
+  95%   2717
+  98%   2720
+  99%   2721
+ 100%   2908 (longest request)
+```
+
+###### Node.js
+
+```sh
+ab -n 1000 -c 100 http://localhost:8084/demo/cpu-intensive
+```
+```
+Server Software:        
+Server Hostname:        localhost
+Server Port:            8084
+
+Document Path:          /demo/cpu-intensive
+Document Length:        12 bytes
+
+Concurrency Level:      100
+Time taken for tests:   102.977 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      211000 bytes
+HTML transferred:       12000 bytes
+Requests per second:    9.71 [#/sec] (mean)
+Time per request:       10297.737 [ms] (mean)
+Time per request:       102.977 [ms] (mean, across all concurrent requests)
+Transfer rate:          2.00 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:        0    1   1.2      1       5
+Processing:   560 10214 307.3  10234   10425
+Waiting:      550 10205 307.2  10223   10425
+Total:        561 10215 307.3  10235   10425
+
+Percentage of the requests served within a certain time (ms)
+  50%  10235
+  66%  10237
+  75%  10238
+  80%  10239
+  90%  10246
+  95%  10259
+  98%  10260
+  99%  10260
+ 100%  10425 (longest request)
+
+```
+
+In a scenario where a CPU intensive operation is involved, the Spring Boot application running on Virtual Threads performs much better than the Node.js application. The total execution time is about 28s, and the average time per request is 2800ms, while the Node.js application takes about 103s to serve the same requests, with an average time per request of 10300ms. 
+What's interesting is that in a CPU intensive scenario the two Spring Boot applications running with Virtual (multi and mono threaded) perform similarly.
