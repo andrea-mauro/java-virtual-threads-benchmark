@@ -43,8 +43,8 @@ public class DemoController {
     public String getCpuLight() {
 
         var initialTime = System.currentTimeMillis();
-        someIoBlockingOperation(200);
-        someIoBlockingOperation(200);
+        someIoNonBlockingOperation(200);
+        someIoNonBlockingOperation(200);
 
         logger.info("Request processed in {} ms", System.currentTimeMillis() - initialTime);
         return "Hello, World!";
@@ -54,15 +54,15 @@ public class DemoController {
     public String getCpuIntensive() {
 
         var initialTime = System.currentTimeMillis();
-        someIoBlockingOperation(200);
+        someIoNonBlockingOperation(200);
         someCpuIntensiveTask(100);
-        someIoBlockingOperation(200);
+        someIoNonBlockingOperation(200);
 
         logger.info("Request processed in {} ms", System.currentTimeMillis() - initialTime);
         return "Hello, World!";
     }
 
-    private void someIoBlockingOperation(int ms) {
+    private void someIoNonBlockingOperation(int ms) {
 
         try {
             Thread.sleep(ms);

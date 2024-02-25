@@ -2,11 +2,11 @@ To run the following tests, first launch the container as described [here](./REA
 
 ### Comparing Spring Boot running with and without virtual threads
 
-We have our normal Java Spring Boot application running with traditional threads responding on port 8081 and the same application running with virtual threads responding on port 8082. Both expose two apis: `/demo/cpu-light` and `/demo/cpu-intensive`, where the first one simulates two blocking IO operations of 200ms each and the second adds a CPU intensive operation of 100ms. The Tomcat server has been configured to run on a thread pool of 50 threads.
+We have our normal Java Spring Boot application running with traditional threads responding on port 8081 and the same application running with virtual threads responding on port 8082. Both expose two apis: `/demo/cpu-light` and `/demo/cpu-intensive`, where the first one simulates two non-blocking IO operations of 200ms each and the second adds a CPU intensive operation of 100ms. The Tomcat server has been configured to run on a thread pool of 50 threads.
 
 #### Testing the CPU light scenario
 
-First some normal flow verification. We will use `ab` to send 1000 requests with concurrency 50 to the `/demo/cpu-light` endpoint of both services. Given that Tomcat can run the requests on 50 threads in parallel (on both services) we expect the requests to be served in 20 batches of 50 requests each. Every request should take around 400ms to be served, given the IO blocking operations simulated in the controller. SO we expect every request to be served in around 400ms and a total of 1000/50 * 400ms = 8000ms = 8s to serve the whole test. This should be the same in both services given that we have enough threads to serve the requests in parallel.
+First some normal flow verification. We will use `ab` to send 1000 requests with concurrency 50 to the `/demo/cpu-light` endpoint of both services. Given that Tomcat can run the requests on 50 threads in parallel (on both services) we expect the requests to be served in 20 batches of 50 requests each. Every request should take around 400ms to be served, given the IO non-blocking operations simulated in the controller. SO we expect every request to be served in around 400ms and a total of 1000/50 * 400ms = 8000ms = 8s to serve the whole test. This should be the same in both services given that we have enough threads to serve the requests in parallel.
 
 ###### Normal Threads
 ```sh
@@ -98,7 +98,7 @@ Percentage of the requests served within a certain time (ms)
 
 The data confirm the hypothesis. The requests are served in around 400ms and the total time is around 8.9s in both services.
 
-Now, Virtual Threads use threads more efficiently by not blocking them on IO operations. While a blocking IO operation is performed (as the one simulated in our controller with the `Threads.sleep()`), the thread is released to serve other requests. This should allow the server running with Virtual Threads to serve more requests, but this would be noticeable only if we have more than 50 requests in parallel.
+Now, Virtual Threads use threads more efficiently by not non-blocking them on IO operations. While a non-blocking IO operation is performed (as the one simulated in our controller with the `Threads.sleep()`), the thread is released to serve other requests. This should allow the server running with Virtual Threads to serve more requests, but this would be noticeable only if we have more than 50 requests in parallel.
 
 ###### Normal Threads
 ```sh
@@ -380,7 +380,7 @@ Percentage of the requests served within a certain time (ms)
  100%    485 (longest request)
 ```
 
-In a scenario where only IO blocking operations are involved, the two services perform similarly. The total execution time is about 5s, and the average time per request is 500ms, which is expected given that the IO blocking operations take 400ms in total and we are running 100 requests in parallel.
+In a scenario where only IO non-blocking operations are involved, the two services perform similarly. The total execution time is about 5s, and the average time per request is 500ms, which is expected given that the IO non-blocking operations take 400ms in total and we are running 100 requests in parallel.
 
 
 #### Testing the CPU intensive scenario

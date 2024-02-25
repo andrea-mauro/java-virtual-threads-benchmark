@@ -9,7 +9,7 @@ There are two modules in the project:
 ### Module `./spring-boot-demo`
 
 This is the Spring Boot service. It consists of a simple REST API that exposes two endpoints:
-* `/demo/cpu-light`: This uses two `Threads.sleep()` to simulate some blocking IO operations, so to make most use of Virtual Threads (when enabled).
+* `/demo/cpu-light`: This uses two `Threads.sleep()` to simulate some non-blocking IO operations, so to make most use of Virtual Threads (when enabled).
 *  `/demo/cpu-intensive`: This adds a CPU intensive operation to the mix simulated with an empty while loop.
 
 We make use of spring profiles to be able to launch the same application in 3 different scenarios: 
@@ -32,7 +32,7 @@ cd spring-boot-demo && ./gradlew bootRun --args='--spring.profiles.active=non-vi
 ### Module `./nodejs-demo`
 
 This is the Node.js service. It consists of a simple REST API that exposes two endpoints:
-* `/demo/cpu-light`: This uses a `setTimeout()` to simulate some IO blocking operations.
+* `/demo/cpu-light`: This uses a `setTimeout()` to simulate some IO non-blocking operations.
 * `/demo/cpu-intensive`: This adds a CPU intensive operation to the mix simulated with an empty while loop.
 
 To install all packages:
